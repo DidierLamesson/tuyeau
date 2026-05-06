@@ -9,13 +9,14 @@ export interface WateringEvent {
   source: EventSource;
 }
 
+export const APARTMENT_LAT = 41.88182843822834;
+export const APARTMENT_LON = 12.5402225347252;
+
 export interface Settings {
   indoorMaxDays: number;
   outdoorMaxDays: number;
   rainThresholdMm: number;
   notifTime: string; // "HH:mm"
-  lat: number | null;
-  lon: number | null;
 }
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -23,8 +24,6 @@ export const DEFAULT_SETTINGS: Settings = {
   outdoorMaxDays: 3,
   rainThresholdMm: 5,
   notifTime: '09:00',
-  lat: null,
-  lon: null,
 };
 
 export type Status = 'ok' | 'due' | 'late';

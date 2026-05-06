@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { clearEvents, saveSettings } from '../../store/db';
 import type { Settings } from '../../store/model';
-import { fetchWeatherByIp, requestLocation } from '../../weather/openMeteo';
 
 interface Props {
   settings: Settings;
@@ -9,29 +7,9 @@ interface Props {
 }
 
 export default function SettingsScreen({ settings, refresh }: Props) {
-  const [busy, setBusy] = useState(false);
-
   async function update(patch: Partial<Settings>) {
     await saveSettings(patch);
     refresh();
-  }
-
-  async function relocate() {
-    setBusy(true);
-    try {
-      let loc: { lat: number; lon: number };
-      try {
-        loc = await requestLocation();
-      } catch {
-        loc = await fetchWeatherByIp();
-      }
-      await saveSettings({ lat: loc.lat, lon: loc.lon });
-      refresh();
-    } catch (e) {
-      alert("Impossible de récupérer la position : " + (e as Error).message);
-    } finally {
-      setBusy(false);
-    }
   }
 
   async function reset() {
@@ -91,20 +69,6 @@ export default function SettingsScreen({ settings, refresh }: Props) {
             value={settings.notifTime}
             onChange={(e) => update({ notifTime: e.target.value })}
           />
-        </div>
-      </div>
-
-      <div className="pix-frame">
-        <div className="field">
-          <label>LOCALISATION</label>
-          <div className="meta" style={{ fontSize: 9 }}>
-            {settings.lat != null && settings.lon != null
-              ? `${settings.lat.toFixed(2)} · ${settings.lon.toFixed(2)}`
-              : 'AUCUNE POSITION'}
-          </div>
-          <button className="pix-btn pix-btn--ghost" onClick={relocate} disabled={busy}>
-            {busy ? '…' : 'METTRE A JOUR'}
-          </button>
         </div>
       </div>
 

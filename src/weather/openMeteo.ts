@@ -1,3 +1,4 @@
+import { APARTMENT_LAT, APARTMENT_LON } from '../store/model';
 import type { WeatherKind } from '../pixel/icons';
 
 export interface WeatherSnapshot {
@@ -5,19 +6,19 @@ export interface WeatherSnapshot {
   tempC: number;
   description: string;
   rainTodayMm: number;
-  fetchedAt: number; // ms timestamp
+  fetchedAt: number;
 }
 
-const CACHE_KEY = 'tuyeau:weather-cache';
+const CACHE_KEY = 'tuyeau:weather-cache:v2';
 const CACHE_TTL_MS = 15 * 60 * 1000; // 15 min
 
 function wmoToKind(code: number): WeatherKind {
   if (code === 0) return 'sun';
   if (code >= 1 && code <= 3) return 'cloud';
-  if (code >= 45 && code <= 48) return 'cloud'; // brouillard
-  if (code >= 51 && code <= 67) return 'rain'; // bruine + pluie verglaçante
-  if (code >= 71 && code <= 77) return 'rain'; // neige (réutilise pluie pour v1)
-  if (code >= 80 && code <= 82) return 'rain'; // averses
+  if (code >= 45 && code <= 48) return 'cloud';
+  if (code >= 51 && code <= 67) return 'rain';
+  if (code >= 71 && code <= 77) return 'rain';
+  if (code >= 80 && code <= 82) return 'rain';
   if (code >= 85 && code <= 86) return 'rain';
   if (code >= 95) return 'storm';
   return 'cloud';
@@ -36,15 +37,15 @@ function wmoToText(code: number): string {
   return 'Orage';
 }
 
-export async function fetchWeather(lat: number, lon: number, force = false): Promise<WeatherSnapshot> {
+export async function fetchWeather(force = false): Promise<WeatherSnapshot> {
   if (!force) {
-    const cached = readCache(lat, lon);
+    const cached = readCache();
     if (cached) return cached;
   }
 
   const url = new URL('https://api.open-meteo.com/v1/forecast');
-  url.searchParams.set('latitude', String(lat));
-  url.searchParams.set('longitude', String(lon));
+  url.searchParams.set('latitude', String(APARTMENT_LAT));
+  url.searchParams.set('longitude', String(APARTMENT_LON));
   url.searchParams.set('current', 'temperature_2m,weather_code');
   url.searchParams.set('daily', 'rain_sum,showers_sum');
   url.searchParams.set('timezone', 'auto');
@@ -64,51 +65,26 @@ export async function fetchWeather(lat: number, lon: number, force = false): Pro
     rainTodayMm: rain + showers,
     fetchedAt: Date.now(),
   };
-  writeCache(lat, lon, snap);
+  writeCache(snap);
   return snap;
 }
 
-function readCache(lat: number, lon: number): WeatherSnapshot | null {
+function readCache(): WeatherSnapshot | null {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
     if (!raw) return null;
-    const obj = JSON.parse(raw);
-    if (obj.lat !== lat || obj.lon !== lon) return null;
-    if (Date.now() - obj.snap.fetchedAt > CACHE_TTL_MS) return null;
-    return obj.snap;
+    const snap = JSON.parse(raw) as WeatherSnapshot;
+    if (Date.now() - snap.fetchedAt > CACHE_TTL_MS) return null;
+    return snap;
   } catch {
     return null;
   }
 }
 
-function writeCache(lat: number, lon: number, snap: WeatherSnapshot): void {
+function writeCache(snap: WeatherSnapshot): void {
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ lat, lon, snap }));
+    localStorage.setItem(CACHE_KEY, JSON.stringify(snap));
   } catch {
     /* quota */
   }
-}
-
-export function requestLocation(): Promise<{ lat: number; lon: number }> {
-  return new Promise((resolve, reject) => {
-    if (!('geolocation' in navigator)) {
-      reject(new Error('geo unsupported'));
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-      (err) => reject(err),
-      { enableHighAccuracy: false, maximumAge: 24 * 60 * 60 * 1000, timeout: 60_000 }
-    );
-  });
-}
-
-export async function fetchWeatherByIp(): Promise<{ lat: number; lon: number }> {
-  const res = await fetch('https://ipapi.co/json/');
-  if (!res.ok) throw new Error('ip lookup failed');
-  const data = await res.json();
-  if (typeof data.latitude !== 'number' || typeof data.longitude !== 'number') {
-    throw new Error('ip lookup incomplete');
-  }
-  return { lat: data.latitude, lon: data.longitude };
 }
