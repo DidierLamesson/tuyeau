@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { addEventOnDate, removeEvent } from '../../store/db';
 import { ymd, type EventGroup, type EventSource, type WateringEvent } from '../../store/model';
-import { PlantIndoor, PlantOutdoor, Trash, WeatherRain } from '../../pixel/icons';
+import { Trash } from '../../pixel/icons';
 
 const MONTHS = ['JANV.', 'FEVR.', 'MARS', 'AVRIL', 'MAI', 'JUIN', 'JUIL.', 'AOUT', 'SEPT.', 'OCT.', 'NOV.', 'DEC.'];
 const DOW = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
@@ -125,11 +125,12 @@ export default function CalendarScreen({ events, refresh }: Props) {
           const info = byDay.get(key);
           const colorCls = classFor(info);
           const isToday = key === todayKey;
+          const isSelected = key === openDay;
           const outCls = c.inMonth ? '' : 'cal-day--out';
           return (
             <button
               key={i}
-              className={`cal-day ${colorCls} ${outCls} ${isToday ? 'cal-day--today' : ''}`}
+              className={`cal-day ${colorCls} ${outCls} ${isToday ? 'cal-day--today' : ''} ${isSelected ? 'cal-day--selected' : ''}`}
               onClick={() => setOpenDay(key)}
             >
               {c.date.getDate()}
@@ -164,16 +165,10 @@ export default function CalendarScreen({ events, refresh }: Props) {
             )}
 
             {!isFuture && (
-              <div className="h-row" style={{ gap: 6 }}>
-                <button className="pix-btn pix-btn--icon pix-btn--indoor" onClick={() => addOnOpenDay('indoor', 'manual')} aria-label="Intérieur">
-                  <PlantIndoor size={20} />
-                </button>
-                <button className="pix-btn pix-btn--icon pix-btn--outdoor" onClick={() => addOnOpenDay('outdoor', 'manual')} aria-label="Extérieur">
-                  <PlantOutdoor size={20} />
-                </button>
-                <button className="pix-btn pix-btn--icon pix-btn--rain" onClick={() => addOnOpenDay('outdoor', 'rain')} aria-label="Pluie">
-                  <WeatherRain size={20} />
-                </button>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
+                <button className="pix-btn pix-btn--indoor" onClick={() => addOnOpenDay('indoor', 'manual')}>Int.</button>
+                <button className="pix-btn pix-btn--outdoor" onClick={() => addOnOpenDay('outdoor', 'manual')}>Ext.</button>
+                <button className="pix-btn pix-btn--rain" onClick={() => addOnOpenDay('outdoor', 'rain')}>Pluie</button>
               </div>
             )}
           </div>

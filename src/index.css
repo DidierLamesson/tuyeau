@@ -271,6 +271,15 @@ button {
   background: linear-gradient(135deg, var(--terracotta-soft) 50%, var(--water-soft) 50%);
 }
 .cal-day--today { outline: 2px solid var(--terracotta); outline-offset: -2px; }
+.cal-day--selected {
+  outline: 3px solid var(--ink);
+  outline-offset: -3px;
+  box-shadow: 2px 2px 0 var(--ink);
+  transform: translate(-1px, -1px);
+}
+.cal-day--selected.cal-day--today {
+  outline-color: var(--terracotta);
+}
 .cal-dow {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
