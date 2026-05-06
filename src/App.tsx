@@ -27,7 +27,7 @@ export default function App() {
   return (
     <div className="app-shell">
       {tab === 'home' && <Home events={events} settings={settings} refresh={refresh} />}
-      {tab === 'calendar' && <CalendarScreen events={events} />}
+      {tab === 'calendar' && <CalendarScreen events={events} refresh={refresh} />}
       {tab === 'settings' && <SettingsScreen settings={settings} refresh={refresh} />}
 
       <nav className="tabbar">

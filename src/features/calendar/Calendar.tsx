@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { ymd, type WateringEvent } from '../../store/model';
+import { addEventOnDate, removeEvent } from '../../store/db';
+import { ymd, type EventGroup, type EventSource, type WateringEvent } from '../../store/model';
 
 const MONTHS = ['JANV.', 'FEVR.', 'MARS', 'AVRIL', 'MAI', 'JUIN', 'JUIL.', 'AOUT', 'SEPT.', 'OCT.', 'NOV.', 'DEC.'];
 const DOW = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
@@ -7,7 +8,7 @@ const DOW = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
 interface DayInfo {
   indoor: boolean;
   outdoor: boolean;
-  rain: boolean; // outdoor watered by rain
+  rain: boolean;
 }
 
 function buildIndex(events: WateringEvent[]): Map<string, DayInfo> {
@@ -36,11 +37,19 @@ function classFor(info: DayInfo | undefined): string {
   return '';
 }
 
-interface Props {
-  events: WateringEvent[];
+function eventLabel(e: WateringEvent): string {
+  if (e.source === 'rain') return 'Pluie';
+  if (e.group === 'indoor') return 'Intérieur';
+  if (e.group === 'outdoor') return 'Extérieur';
+  return 'Tout';
 }
 
-export default function CalendarScreen({ events }: Props) {
+interface Props {
+  events: WateringEvent[];
+  refresh: () => void;
+}
+
+export default function CalendarScreen({ events, refresh }: Props) {
   const today = new Date();
   const [cursor, setCursor] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [openDay, setOpenDay] = useState<string | null>(null);
@@ -54,16 +63,12 @@ export default function CalendarScreen({ events }: Props) {
 
   type Cell = { date: Date; inMonth: boolean };
   const cells: Cell[] = [];
-  // leading days from previous month
   for (let i = firstDow - 1; i >= 0; i--) {
-    const d = new Date(year, month, -i);
-    cells.push({ date: d, inMonth: false });
+    cells.push({ date: new Date(year, month, -i), inMonth: false });
   }
-  // current month
   for (let d = 1; d <= daysInMonth; d++) {
     cells.push({ date: new Date(year, month, d), inMonth: true });
   }
-  // trailing to fill last week
   while (cells.length % 7 !== 0) {
     const last = cells[cells.length - 1].date;
     cells.push({ date: new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1), inMonth: false });
@@ -73,8 +78,22 @@ export default function CalendarScreen({ events }: Props) {
   function next() { setCursor(new Date(year, month + 1, 1)); }
 
   const todayKey = ymd(today);
-  const openInfo = openDay ? byDay.get(openDay) : undefined;
   const openEvents = openDay ? events.filter((e) => ymd(new Date(e.date)) === openDay) : [];
+  const isFuture = openDay ? openDay > todayKey : false;
+
+  async function addOnOpenDay(group: EventGroup, source: EventSource) {
+    if (!openDay) return;
+    // place the event at noon local time on the chosen day so it sorts cleanly
+    const [y, m, d] = openDay.split('-').map(Number);
+    const iso = new Date(y, m - 1, d, 12, 0, 0).toISOString();
+    await addEventOnDate(group, source, iso);
+    refresh();
+  }
+
+  async function deleteEvent(id: string) {
+    await removeEvent(id);
+    refresh();
+  }
 
   return (
     <div className="screen">
@@ -112,18 +131,34 @@ export default function CalendarScreen({ events }: Props) {
       {openDay && (
         <div className="pix-frame">
           <div className="h-stack">
-            <div style={{ fontSize: 10 }}>{openDay}</div>
-            {openInfo ? (
-              <>
-                {openInfo.indoor && <div className="meta" style={{ fontSize: 9 }}>· Intérieur arrosé</div>}
-                {openInfo.outdoor && <div className="meta" style={{ fontSize: 9 }}>· Extérieur arrosé</div>}
-                {openInfo.rain && <div className="meta" style={{ fontSize: 9 }}>· Pluie</div>}
-                {openEvents.length === 0 && <div className="meta" style={{ fontSize: 9 }}>Rien ce jour-là</div>}
-              </>
+            <div className="h-row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ fontSize: 10 }}>{openDay}</div>
+              <button className="pix-btn pix-btn--ghost" onClick={() => setOpenDay(null)}>FERMER</button>
+            </div>
+
+            {openEvents.length > 0 ? (
+              <div className="h-stack" style={{ gap: 6 }}>
+                {openEvents.map((e) => (
+                  <div key={e.id} className="h-row" style={{ justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
+                    <span className="meta" style={{ fontSize: 9 }}>· {eventLabel(e)}</span>
+                    <button className="pix-btn pix-btn--danger" onClick={() => deleteEvent(e.id)}>SUPPRIMER</button>
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="meta" style={{ fontSize: 9 }}>Rien ce jour-là</div>
             )}
-            <button className="pix-btn pix-btn--ghost" onClick={() => setOpenDay(null)}>Fermer</button>
+
+            {!isFuture && (
+              <div className="h-stack" style={{ gap: 6, marginTop: 4 }}>
+                <div className="meta" style={{ fontSize: 8 }}>AJOUTER</div>
+                <div className="h-row" style={{ gap: 6, flexWrap: 'wrap' }}>
+                  <button className="pix-btn" onClick={() => addOnOpenDay('indoor', 'manual')}>INTERIEUR</button>
+                  <button className="pix-btn" onClick={() => addOnOpenDay('outdoor', 'manual')}>EXTERIEUR</button>
+                  <button className="pix-btn pix-btn--ghost" onClick={() => addOnOpenDay('outdoor', 'rain')}>PLUIE</button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

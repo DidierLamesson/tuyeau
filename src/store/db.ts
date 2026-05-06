@@ -29,6 +29,12 @@ export async function addEvent(group: EventGroup, source: EventSource = 'manual'
   return e;
 }
 
+export async function addEventOnDate(group: EventGroup, source: EventSource, isoDate: string): Promise<WateringEvent> {
+  const e: WateringEvent = { id: uid(), date: isoDate, group, source };
+  await update<WateringEvent[]>(KEY_EVENTS, (cur) => [...(cur ?? []), e]);
+  return e;
+}
+
 export async function removeEvent(id: string): Promise<void> {
   await update<WateringEvent[]>(KEY_EVENTS, (cur) => (cur ?? []).filter((e) => e.id !== id));
 }
