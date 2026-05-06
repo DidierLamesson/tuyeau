@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { addEvent, getGroupState, getStreak, lastEventForGroup, removeEvent, saveSettings } from '../../store/db';
 import type { Group, Settings, WateringEvent } from '../../store/model';
 import { PlantIndoor, PlantOutdoor, WateringCan, WeatherIcon } from '../../pixel/icons';
-import { fetchWeather, requestLocation, type WeatherSnapshot } from '../../weather/openMeteo';
+import { fetchWeather, fetchWeatherByIp, requestLocation, type WeatherSnapshot } from '../../weather/openMeteo';
 
 function greeting(): string {
   const h = new Date().getHours();
@@ -26,9 +26,9 @@ function formatLast(iso: string | null): string {
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const days = Math.floor(diffMs / 86_400_000);
-  if (days === 0) return "Aujourd'hui";
-  if (days === 1) return 'Hier';
-  return `Il y a ${days} j`;
+  if (days === 0) return "AUJOURD'HUI";
+  if (days === 1) return 'HIER';
+  return `IL Y A ${days} J`;
 }
 
 interface HomeProps {
@@ -41,6 +41,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
   const [snack, setSnack] = useState<{ msg: string; undoId: string } | null>(null);
   const [weather, setWeather] = useState<WeatherSnapshot | null>(null);
   const [weatherErr, setWeatherErr] = useState<string | null>(null);
+  const [enabling, setEnabling] = useState(false);
 
   const indoor = getGroupState(events, 'indoor', settings.indoorMaxDays);
   const outdoor = getGroupState(events, 'outdoor', settings.outdoorMaxDays);
@@ -65,12 +66,21 @@ export default function Home({ events, settings, refresh }: HomeProps) {
   }, [settings.lat, settings.lon]);
 
   async function enableLocation() {
+    setEnabling(true);
+    setWeatherErr(null);
     try {
-      const loc = await requestLocation();
+      let loc: { lat: number; lon: number };
+      try {
+        loc = await requestLocation();
+      } catch {
+        loc = await fetchWeatherByIp();
+      }
       await saveSettings({ lat: loc.lat, lon: loc.lon });
       refresh();
     } catch (e) {
-      setWeatherErr((e as Error).message);
+      setWeatherErr((e as Error).message || 'no-location');
+    } finally {
+      setEnabling(false);
     }
   }
 
@@ -84,7 +94,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
   async function water(g: Group | 'both', source: 'manual' | 'rain' = 'manual') {
     const e = await addEvent(g, source);
     setSnack({
-      msg: g === 'both' ? 'Tout arrosé' : g === 'indoor' ? 'Intérieur arrosé' : 'Extérieur arrosé',
+      msg: g === 'both' ? 'Tout arrose' : g === 'indoor' ? 'Interieur arrose' : 'Exterieur arrose',
       undoId: e.id,
     });
     refresh();
@@ -105,14 +115,14 @@ export default function Home({ events, settings, refresh }: HomeProps) {
         <div className="subline">{contextLine(indoor.status === 'late', outdoor.status === 'late')}</div>
       </div>
 
-      <WeatherCard weather={weather} error={weatherErr} onEnable={enableLocation} />
+      <WeatherCard weather={weather} error={weatherErr} onEnable={enableLocation} enabling={enabling} />
 
       {showRainCard && !outdoorAlreadyToday && (
         <RainCard mm={weather!.rainTodayMm} onConfirm={() => water('outdoor', 'rain')} />
       )}
 
       <GroupCard
-        title="Intérieur"
+        title="INTERIEUR"
         icon={<PlantIndoor />}
         last={formatLast(indoor.lastWateredAt)}
         days={indoor.daysSince}
@@ -122,7 +132,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
       />
 
       <GroupCard
-        title="Extérieur"
+        title="EXTERIEUR"
         icon={<PlantOutdoor />}
         last={formatLast(outdoor.lastWateredAt)}
         days={outdoor.daysSince}
@@ -133,41 +143,30 @@ export default function Home({ events, settings, refresh }: HomeProps) {
 
       <div className="spacer" />
       <div className="streak">
-        {streak > 0 ? `Série · ${streak} jour${streak > 1 ? 's' : ''}` : 'Aucune série en cours'}
+        {streak > 0 ? `SERIE · ${streak} JOUR${streak > 1 ? 'S' : ''}` : 'AUCUNE SERIE EN COURS'}
       </div>
 
       {snack && (
         <div className="snackbar">
           <span>{snack.msg}</span>
-          <button onClick={undo}>Annuler</button>
+          <button onClick={undo}>ANNULER</button>
         </div>
       )}
     </div>
   );
 }
 
-function WeatherCard({ weather, error, onEnable }: { weather: WeatherSnapshot | null; error: string | null; onEnable: () => void }) {
-  if (error === 'no-location') {
+function WeatherCard({ weather, error, onEnable, enabling }: { weather: WeatherSnapshot | null; error: string | null; onEnable: () => void; enabling: boolean }) {
+  if (error === 'no-location' || (error && !weather)) {
     return (
       <div className="pix-frame">
         <div className="weather">
           <WeatherIcon kind="cloud" />
           <div className="h-stack" style={{ flex: 1 }}>
-            <div className="desc">Météo désactivée</div>
-            <button className="pix-btn pix-btn--ghost" onClick={onEnable}>Activer</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  if (error && !weather) {
-    return (
-      <div className="pix-frame">
-        <div className="weather">
-          <WeatherIcon kind="cloud" />
-          <div className="h-stack">
-            <div className="temp">— °</div>
-            <div className="desc">Météo indisponible</div>
+            <div className="desc">{error === 'no-location' ? 'Meteo desactivee' : 'Meteo indisponible'}</div>
+            <button className="pix-btn pix-btn--ghost" onClick={onEnable} disabled={enabling}>
+              {enabling ? 'PATIENTE…' : 'ACTIVER'}
+            </button>
           </div>
         </div>
       </div>
@@ -207,7 +206,7 @@ function RainCard({ mm, onConfirm }: { mm: number; onConfirm: () => void }) {
           Il a plu {mm.toFixed(1)} mm. Marquer l'extérieur comme arrosé ?
         </div>
         <button className="pix-btn pix-btn--terracotta" onClick={onConfirm}>
-          Confirmer
+          CONFIRMER
         </button>
       </div>
     </div>
@@ -225,7 +224,7 @@ interface GroupCardProps {
 }
 
 function GroupCard({ title, icon, last, days, max, status, onWater }: GroupCardProps) {
-  const statusLabel = status === 'late' ? `Retard ${days != null ? `· ${days - max + 1} j` : ''}` : status === 'due' ? 'À arroser' : 'OK';
+  const statusLabel = status === 'late' ? `RETARD ${days != null ? `· ${days - max + 1} J` : ''}` : status === 'due' ? 'A ARROSER' : 'OK';
   const cls = status === 'late' ? 'status--late' : status === 'due' ? 'status--due' : '';
   return (
     <div className={`pix-frame ${status === 'late' ? 'pix-frame--danger' : ''}`}>
@@ -234,14 +233,14 @@ function GroupCard({ title, icon, last, days, max, status, onWater }: GroupCardP
           <div>{icon}</div>
           <div className="h-stack" style={{ flex: 1 }}>
             <div className="label">{title}</div>
-            <div className="meta">Arrosé · {last}</div>
-            <div className="meta">Seuil · {max} j</div>
+            <div className="meta">ARROSE · {last}</div>
+            <div className="meta">SEUIL · {max} J</div>
           </div>
           <span className={`status ${cls}`}>{statusLabel}</span>
         </div>
         <button className="pix-btn" onClick={onWater}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <WateringCan size={16} /> Arroser
+            <WateringCan size={16} /> ARROSER
           </span>
         </button>
       </div>

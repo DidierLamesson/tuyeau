@@ -94,7 +94,17 @@ export function requestLocation(): Promise<{ lat: number; lon: number }> {
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
       (err) => reject(err),
-      { maximumAge: 60 * 60 * 1000, timeout: 10000 }
+      { enableHighAccuracy: false, maximumAge: 24 * 60 * 60 * 1000, timeout: 60_000 }
     );
   });
+}
+
+export async function fetchWeatherByIp(): Promise<{ lat: number; lon: number }> {
+  const res = await fetch('https://ipapi.co/json/');
+  if (!res.ok) throw new Error('ip lookup failed');
+  const data = await res.json();
+  if (typeof data.latitude !== 'number' || typeof data.longitude !== 'number') {
+    throw new Error('ip lookup incomplete');
+  }
+  return { lat: data.latitude, lon: data.longitude };
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { clearEvents, saveSettings } from '../../store/db';
 import type { Settings } from '../../store/model';
-import { requestLocation } from '../../weather/openMeteo';
+import { fetchWeatherByIp, requestLocation } from '../../weather/openMeteo';
 
 interface Props {
   settings: Settings;
@@ -19,18 +19,23 @@ export default function SettingsScreen({ settings, refresh }: Props) {
   async function relocate() {
     setBusy(true);
     try {
-      const loc = await requestLocation();
+      let loc: { lat: number; lon: number };
+      try {
+        loc = await requestLocation();
+      } catch {
+        loc = await fetchWeatherByIp();
+      }
       await saveSettings({ lat: loc.lat, lon: loc.lon });
       refresh();
     } catch (e) {
-      alert('Impossible de récupérer la position : ' + (e as Error).message);
+      alert("Impossible de recuperer la position : " + (e as Error).message);
     } finally {
       setBusy(false);
     }
   }
 
   async function reset() {
-    if (!confirm('Effacer tout l\'historique ? Action irréversible.')) return;
+    if (!confirm("Effacer tout l'historique ? Action irreversible.")) return;
     await clearEvents();
     refresh();
   }
@@ -41,11 +46,11 @@ export default function SettingsScreen({ settings, refresh }: Props) {
 
       <div className="pix-frame">
         <div className="field">
-          <label>Intérieur · max {settings.indoorMaxDays} j</label>
+          <label>INTERIEUR · MAX {settings.indoorMaxDays} J</label>
           <input
             type="range"
             min={1}
-            max={30}
+            max={10}
             value={settings.indoorMaxDays}
             onChange={(e) => update({ indoorMaxDays: Number(e.target.value) })}
           />
@@ -54,11 +59,11 @@ export default function SettingsScreen({ settings, refresh }: Props) {
 
       <div className="pix-frame">
         <div className="field">
-          <label>Extérieur · max {settings.outdoorMaxDays} j</label>
+          <label>EXTERIEUR · MAX {settings.outdoorMaxDays} J</label>
           <input
             type="range"
             min={1}
-            max={30}
+            max={10}
             value={settings.outdoorMaxDays}
             onChange={(e) => update({ outdoorMaxDays: Number(e.target.value) })}
           />
@@ -67,11 +72,11 @@ export default function SettingsScreen({ settings, refresh }: Props) {
 
       <div className="pix-frame">
         <div className="field">
-          <label>Seuil pluie · {settings.rainThresholdMm} mm</label>
+          <label>SEUIL PLUIE · {settings.rainThresholdMm} MM</label>
           <input
             type="range"
             min={1}
-            max={30}
+            max={20}
             value={settings.rainThresholdMm}
             onChange={(e) => update({ rainThresholdMm: Number(e.target.value) })}
           />
@@ -80,7 +85,7 @@ export default function SettingsScreen({ settings, refresh }: Props) {
 
       <div className="pix-frame">
         <div className="field">
-          <label>Heure du rappel</label>
+          <label>HEURE DU RAPPEL</label>
           <input
             type="time"
             value={settings.notifTime}
@@ -91,23 +96,23 @@ export default function SettingsScreen({ settings, refresh }: Props) {
 
       <div className="pix-frame">
         <div className="field">
-          <label>Localisation</label>
+          <label>LOCALISATION</label>
           <div className="meta" style={{ fontSize: 9 }}>
             {settings.lat != null && settings.lon != null
               ? `${settings.lat.toFixed(2)} · ${settings.lon.toFixed(2)}`
-              : 'Aucune position'}
+              : 'AUCUNE POSITION'}
           </div>
           <button className="pix-btn pix-btn--ghost" onClick={relocate} disabled={busy}>
-            {busy ? '…' : 'Mettre à jour'}
+            {busy ? '…' : 'METTRE A JOUR'}
           </button>
         </div>
       </div>
 
       <div className="pix-frame">
         <div className="field">
-          <label>Historique</label>
+          <label>HISTORIQUE</label>
           <button className="pix-btn pix-btn--danger" onClick={reset}>
-            Tout effacer
+            TOUT EFFACER
           </button>
         </div>
       </div>

@@ -16,8 +16,10 @@
   --mint: #c8e0a8;
   --terracotta: #c46b4f;
   --terracotta-dark: #8a4a35;
+  --terracotta-soft: #e8b89a;
   --water: #6fa8d6;
   --water-dark: #3a6f9c;
+  --water-soft: #b8d4ea;
   --sun: #f0d264;
   --rain: #88a8c4;
   --danger: #c43d2a;
@@ -90,7 +92,7 @@ button {
   padding: 10px 14px;
   font-size: 10px;
   letter-spacing: 0.5px;
-  text-transform: uppercase;
+  /* uppercase handled in source strings to avoid accented capitals */
   transition: transform 0.05s, box-shadow 0.05s;
 }
 
@@ -118,7 +120,7 @@ button {
   padding: 14px 8px;
   font-size: 9px;
   text-align: center;
-  text-transform: uppercase;
+  /* uppercase handled in source strings to avoid accented capitals */
   letter-spacing: 0.5px;
   color: var(--ink-soft);
   background: transparent;
@@ -177,7 +179,7 @@ button {
   display: inline-block;
   background: var(--mint);
   border: 2px solid var(--ink);
-  text-transform: uppercase;
+  /* uppercase handled in source strings to avoid accented capitals */
 }
 .status--late { background: var(--danger-bg); color: var(--danger); }
 .status--due { background: var(--sun); }
@@ -187,7 +189,7 @@ button {
   text-align: center;
   font-size: 8px;
   color: var(--ink-soft);
-  text-transform: uppercase;
+  /* uppercase handled in source strings to avoid accented capitals */
   letter-spacing: 1px;
 }
 
@@ -220,7 +222,7 @@ button {
 .snackbar button {
   color: var(--sun);
   font-size: 9px;
-  text-transform: uppercase;
+  /* uppercase handled in source strings to avoid accented capitals */
   background: none;
   border: none;
 }
@@ -242,10 +244,19 @@ button {
   padding: 3px;
   position: relative;
 }
-.cal-day--indoor { background: var(--mint); }
+.cal-day--out {
+  opacity: 0.4;
+  border-color: var(--ink-soft);
+  background: #f0e6d0;
+}
+.cal-day--indoor { background: var(--terracotta-soft); }
 .cal-day--outdoor { background: var(--sage); }
+.cal-day--rain { background: var(--water-soft); }
 .cal-day--both {
-  background: linear-gradient(135deg, var(--mint) 50%, var(--sage) 50%);
+  background: linear-gradient(135deg, var(--terracotta-soft) 50%, var(--sage) 50%);
+}
+.cal-day--rain-indoor {
+  background: linear-gradient(135deg, var(--terracotta-soft) 50%, var(--water-soft) 50%);
 }
 .cal-day--today { outline: 2px solid var(--terracotta); outline-offset: -2px; }
 .cal-dow {
@@ -255,7 +266,7 @@ button {
   font-size: 8px;
   text-align: center;
   color: var(--ink-soft);
-  text-transform: uppercase;
+  /* uppercase handled in source strings to avoid accented capitals */
   margin-bottom: 4px;
 }
 
@@ -267,7 +278,7 @@ button {
 }
 .field label {
   font-size: 9px;
-  text-transform: uppercase;
+  /* uppercase handled in source strings to avoid accented capitals */
   color: var(--ink-soft);
 }
 .field input[type="range"] {

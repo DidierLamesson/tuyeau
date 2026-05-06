@@ -31,9 +31,9 @@ export default function App() {
       {tab === 'settings' && <SettingsScreen settings={settings} refresh={refresh} />}
 
       <nav className="tabbar">
-        <button className={`tab ${tab === 'home' ? 'tab--active' : ''}`} onClick={() => setTab('home')}>Accueil</button>
-        <button className={`tab ${tab === 'calendar' ? 'tab--active' : ''}`} onClick={() => setTab('calendar')}>Calendrier</button>
-        <button className={`tab ${tab === 'settings' ? 'tab--active' : ''}`} onClick={() => setTab('settings')}>Réglages</button>
+        <button className={`tab ${tab === 'home' ? 'tab--active' : ''}`} onClick={() => setTab('home')}>ACCUEIL</button>
+        <button className={`tab ${tab === 'calendar' ? 'tab--active' : ''}`} onClick={() => setTab('calendar')}>CALENDRIER</button>
+        <button className={`tab ${tab === 'settings' ? 'tab--active' : ''}`} onClick={() => setTab('settings')}>REGLAGES</button>
       </nav>
     </div>
   );
