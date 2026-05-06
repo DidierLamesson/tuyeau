@@ -115,13 +115,13 @@ export default function CalendarScreen({ events }: Props) {
             <div style={{ fontSize: 10 }}>{openDay}</div>
             {openInfo ? (
               <>
-                {openInfo.indoor && <div className="meta" style={{ fontSize: 9 }}>· Interieur arrose</div>}
-                {openInfo.outdoor && <div className="meta" style={{ fontSize: 9 }}>· Exterieur arrose</div>}
+                {openInfo.indoor && <div className="meta" style={{ fontSize: 9 }}>· Intérieur arrosé</div>}
+                {openInfo.outdoor && <div className="meta" style={{ fontSize: 9 }}>· Extérieur arrosé</div>}
                 {openInfo.rain && <div className="meta" style={{ fontSize: 9 }}>· Pluie</div>}
-                {openEvents.length === 0 && <div className="meta" style={{ fontSize: 9 }}>Rien ce jour-la</div>}
+                {openEvents.length === 0 && <div className="meta" style={{ fontSize: 9 }}>Rien ce jour-là</div>}
               </>
             ) : (
-              <div className="meta" style={{ fontSize: 9 }}>Rien ce jour-la</div>
+              <div className="meta" style={{ fontSize: 9 }}>Rien ce jour-là</div>
             )}
             <button className="pix-btn pix-btn--ghost" onClick={() => setOpenDay(null)}>Fermer</button>
           </div>
@@ -143,10 +143,10 @@ function Legend() {
   return (
     <div className="pix-frame">
       <div className="h-stack" style={{ gap: 6 }}>
-        <div className="meta" style={row}><span style={sw('var(--terracotta-soft)')} /> Interieur</div>
-        <div className="meta" style={row}><span style={sw('var(--sage)')} /> Exterieur</div>
+        <div className="meta" style={row}><span style={sw('var(--terracotta-soft)')} /> Intérieur</div>
+        <div className="meta" style={row}><span style={sw('var(--sage)')} /> Extérieur</div>
         <div className="meta" style={row}><span style={sw('var(--water-soft)')} /> Pluie</div>
-        <div className="meta" style={row}><span style={sw('linear-gradient(135deg, var(--terracotta-soft) 50%, var(--sage) 50%)')} /> Interieur + exterieur</div>
+        <div className="meta" style={row}><span style={sw('linear-gradient(135deg, var(--terracotta-soft) 50%, var(--sage) 50%)')} /> Intérieur + extérieur</div>
       </div>
     </div>
   );

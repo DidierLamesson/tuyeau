@@ -28,14 +28,14 @@ export default function SettingsScreen({ settings, refresh }: Props) {
       await saveSettings({ lat: loc.lat, lon: loc.lon });
       refresh();
     } catch (e) {
-      alert("Impossible de recuperer la position : " + (e as Error).message);
+      alert("Impossible de récupérer la position : " + (e as Error).message);
     } finally {
       setBusy(false);
     }
   }
 
   async function reset() {
-    if (!confirm("Effacer tout l'historique ? Action irreversible.")) return;
+    if (!confirm("Effacer tout l'historique ? Action irréversible.")) return;
     await clearEvents();
     refresh();
   }

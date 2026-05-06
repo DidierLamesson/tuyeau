@@ -94,7 +94,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
   async function water(g: Group | 'both', source: 'manual' | 'rain' = 'manual') {
     const e = await addEvent(g, source);
     setSnack({
-      msg: g === 'both' ? 'Tout arrose' : g === 'indoor' ? 'Interieur arrose' : 'Exterieur arrose',
+      msg: g === 'both' ? 'Tout arrosé' : g === 'indoor' ? 'Intérieur arrosé' : 'Extérieur arrosé',
       undoId: e.id,
     });
     refresh();
@@ -163,7 +163,7 @@ function WeatherCard({ weather, error, onEnable, enabling }: { weather: WeatherS
         <div className="weather">
           <WeatherIcon kind="cloud" />
           <div className="h-stack" style={{ flex: 1 }}>
-            <div className="desc">{error === 'no-location' ? 'Meteo desactivee' : 'Meteo indisponible'}</div>
+            <div className="desc">{error === 'no-location' ? 'Météo désactivée' : 'Météo indisponible'}</div>
             <button className="pix-btn pix-btn--ghost" onClick={onEnable} disabled={enabling}>
               {enabling ? 'PATIENTE…' : 'ACTIVER'}
             </button>
