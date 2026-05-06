@@ -82,6 +82,9 @@ button {
 .pix-frame--sage { background: var(--mint); }
 .pix-frame--terracotta { background: #f5d4c4; }
 .pix-frame--danger { background: var(--danger-bg); }
+.pix-frame--indoor { background: var(--terracotta-soft); }
+.pix-frame--outdoor { background: var(--sage); }
+.pix-frame--rain { background: var(--water-soft); }
 
 .pix-btn {
   font-family: var(--pixel);
@@ -104,6 +107,7 @@ button {
 .pix-btn--terracotta { background: var(--terracotta); }
 .pix-btn--ghost { background: var(--cream-shade); color: var(--ink); }
 .pix-btn--danger { background: var(--danger); }
+.pix-btn--water { background: var(--water-dark); color: #fff; }
 .pix-btn--icon {
   padding: 6px;
   display: inline-flex;

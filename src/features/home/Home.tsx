@@ -98,6 +98,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
       <GroupCard
         title="INTERIEUR"
         icon={<PlantIndoor />}
+        variant="indoor"
         last={formatLast(indoor.lastWateredAt)}
         days={indoor.daysSince}
         max={settings.indoorMaxDays}
@@ -108,6 +109,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
       <GroupCard
         title="EXTERIEUR"
         icon={<PlantOutdoor />}
+        variant="outdoor"
         last={formatLast(outdoor.lastWateredAt)}
         days={outdoor.daysSince}
         max={settings.outdoorMaxDays}
@@ -173,12 +175,12 @@ function WeatherCard({ weather, error, onRefresh }: { weather: WeatherSnapshot |
 
 function RainCard({ mm, onConfirm }: { mm: number; onConfirm: () => void }) {
   return (
-    <div className="pix-frame pix-frame--sage">
+    <div className="pix-frame pix-frame--rain">
       <div className="h-stack" style={{ gap: 10 }}>
         <div style={{ fontSize: 10, lineHeight: 1.5 }}>
           Il a plu {mm.toFixed(1)} mm. Marquer l'extérieur comme arrosé ?
         </div>
-        <button className="pix-btn pix-btn--terracotta" onClick={onConfirm}>
+        <button className="pix-btn pix-btn--water" onClick={onConfirm}>
           CONFIRMER
         </button>
       </div>
@@ -189,6 +191,7 @@ function RainCard({ mm, onConfirm }: { mm: number; onConfirm: () => void }) {
 interface GroupCardProps {
   title: string;
   icon: React.ReactNode;
+  variant: 'indoor' | 'outdoor';
   last: string;
   days: number | null;
   max: number;
@@ -196,11 +199,12 @@ interface GroupCardProps {
   onWater: () => void;
 }
 
-function GroupCard({ title, icon, last, days, max, status, onWater }: GroupCardProps) {
+function GroupCard({ title, icon, variant, last, days, max, status, onWater }: GroupCardProps) {
   const statusLabel = status === 'late' ? `RETARD ${days != null ? `· ${days - max + 1} J` : ''}` : status === 'due' ? 'A ARROSER' : 'OK';
   const cls = status === 'late' ? 'status--late' : status === 'due' ? 'status--due' : '';
+  const frameVariant = status === 'late' ? 'pix-frame--danger' : `pix-frame--${variant}`;
   return (
-    <div className={`pix-frame ${status === 'late' ? 'pix-frame--danger' : ''}`}>
+    <div className={`pix-frame ${frameVariant}`}>
       <div className="group-card">
         <div className="h-row">
           <div>{icon}</div>
