@@ -327,13 +327,11 @@ button {
 }
 .field input[type="range"]::-webkit-slider-runnable-track {
   height: 10px;
-  background: var(--cream);
   border: 2px solid var(--ink);
   box-shadow: 2px 2px 0 var(--ink);
 }
 .field input[type="range"]::-moz-range-track {
   height: 10px;
-  background: var(--cream);
   border: 2px solid var(--ink);
   box-shadow: 2px 2px 0 var(--ink);
 }
@@ -343,7 +341,6 @@ button {
   width: 18px;
   height: 18px;
   margin-top: -6px;
-  background: var(--moss);
   border: 2px solid var(--ink);
   box-shadow: 2px 2px 0 var(--ink);
   cursor: pointer;
@@ -351,7 +348,6 @@ button {
 .field input[type="range"]::-moz-range-thumb {
   width: 18px;
   height: 18px;
-  background: var(--moss);
   border: 2px solid var(--ink);
   border-radius: 0;
   box-shadow: 2px 2px 0 var(--ink);
