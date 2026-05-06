@@ -284,6 +284,8 @@ button {
   outline-offset: -3px;
   box-shadow: 2px 2px 0 var(--ink);
   transform: translate(-1px, -1px);
+  opacity: 1;
+  border-color: var(--ink);
 }
 .cal-day--selected.cal-day--today {
   outline-color: var(--terracotta);
