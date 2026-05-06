@@ -371,21 +371,22 @@ button {
   gap: 8px;
 }
 
-/* Slider colour variants — track tinted with the soft tone, thumb with the dark tone */
-.slider--indoor::-webkit-slider-runnable-track { background: var(--terracotta-soft); }
-.slider--indoor::-moz-range-track { background: var(--terracotta-soft); }
-.slider--indoor::-webkit-slider-thumb { background: var(--terracotta-dark); }
-.slider--indoor::-moz-range-thumb { background: var(--terracotta-dark); }
+/* Slider colour variants — track in cream for contrast against the
+   coloured cards; thumb in the exact card colour (the regulated subject) */
+.slider--indoor::-webkit-slider-runnable-track { background: var(--cream); }
+.slider--indoor::-moz-range-track { background: var(--cream); }
+.slider--indoor::-webkit-slider-thumb { background: var(--terracotta-soft); }
+.slider--indoor::-moz-range-thumb { background: var(--terracotta-soft); }
 
-.slider--outdoor::-webkit-slider-runnable-track { background: var(--mint); }
-.slider--outdoor::-moz-range-track { background: var(--mint); }
-.slider--outdoor::-webkit-slider-thumb { background: var(--moss); }
-.slider--outdoor::-moz-range-thumb { background: var(--moss); }
+.slider--outdoor::-webkit-slider-runnable-track { background: var(--cream); }
+.slider--outdoor::-moz-range-track { background: var(--cream); }
+.slider--outdoor::-webkit-slider-thumb { background: var(--sage); }
+.slider--outdoor::-moz-range-thumb { background: var(--sage); }
 
-.slider--rain::-webkit-slider-runnable-track { background: var(--water-soft); }
-.slider--rain::-moz-range-track { background: var(--water-soft); }
-.slider--rain::-webkit-slider-thumb { background: var(--water-dark); }
-.slider--rain::-moz-range-thumb { background: var(--water-dark); }
+.slider--rain::-webkit-slider-runnable-track { background: var(--cream); }
+.slider--rain::-moz-range-track { background: var(--cream); }
+.slider--rain::-webkit-slider-thumb { background: var(--water-soft); }
+.slider--rain::-moz-range-thumb { background: var(--water-soft); }
 
 /* Time picker (custom — keeps DA, no native dropdown) */
 .time-display {
