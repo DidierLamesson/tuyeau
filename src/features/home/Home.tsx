@@ -47,9 +47,23 @@ export default function Home({ events, settings, refresh }: HomeProps) {
   const outdoor = getGroupState(events, 'outdoor', settings.outdoorMaxDays);
   const streak = getStreak(events);
 
+  async function loadWeather(force = false) {
+    if (settings.lat == null || settings.lon == null) {
+      setWeatherErr('no-location');
+      return;
+    }
+    setWeatherErr(null);
+    try {
+      const snap = await fetchWeather(settings.lat, settings.lon, force);
+      setWeather(snap);
+    } catch (e) {
+      setWeatherErr((e as Error).message);
+    }
+  }
+
   useEffect(() => {
     let cancelled = false;
-    async function load() {
+    (async () => {
       if (settings.lat == null || settings.lon == null) {
         if (!cancelled) setWeatherErr('no-location');
         return;
@@ -60,8 +74,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
       } catch (e) {
         if (!cancelled) setWeatherErr((e as Error).message);
       }
-    }
-    load();
+    })();
     return () => { cancelled = true; };
   }, [settings.lat, settings.lon]);
 
@@ -115,7 +128,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
         <div className="subline">{contextLine(indoor.status === 'late', outdoor.status === 'late')}</div>
       </div>
 
-      <WeatherCard weather={weather} error={weatherErr} onEnable={enableLocation} enabling={enabling} />
+      <WeatherCard weather={weather} error={weatherErr} onEnable={enableLocation} onRefresh={() => loadWeather(true)} enabling={enabling} />
 
       {showRainCard && !outdoorAlreadyToday && (
         <RainCard mm={weather!.rainTodayMm} onConfirm={() => water('outdoor', 'rain')} />
@@ -156,7 +169,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
   );
 }
 
-function WeatherCard({ weather, error, onEnable, enabling }: { weather: WeatherSnapshot | null; error: string | null; onEnable: () => void; enabling: boolean }) {
+function WeatherCard({ weather, error, onEnable, onRefresh, enabling }: { weather: WeatherSnapshot | null; error: string | null; onEnable: () => void; onRefresh: () => void; enabling: boolean }) {
   if (error === 'no-location' || (error && !weather)) {
     return (
       <div className="pix-frame">
@@ -189,10 +202,11 @@ function WeatherCard({ weather, error, onEnable, enabling }: { weather: WeatherS
     <div className="pix-frame">
       <div className="weather">
         <WeatherIcon kind={weather.kind} />
-        <div className="h-stack">
+        <div className="h-stack" style={{ flex: 1 }}>
           <div className="temp">{weather.tempC}°</div>
           <div className="desc">{weather.description} · {weather.rainTodayMm.toFixed(1)} mm pluie</div>
         </div>
+        <button className="pix-btn pix-btn--ghost" onClick={onRefresh} title="Rafraichir">⟳</button>
       </div>
     </div>
   );

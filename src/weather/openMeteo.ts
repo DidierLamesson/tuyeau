@@ -9,7 +9,7 @@ export interface WeatherSnapshot {
 }
 
 const CACHE_KEY = 'tuyeau:weather-cache';
-const CACHE_TTL_MS = 60 * 60 * 1000; // 1h
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 min
 
 function wmoToKind(code: number): WeatherKind {
   if (code === 0) return 'sun';
@@ -36,15 +36,17 @@ function wmoToText(code: number): string {
   return 'Orage';
 }
 
-export async function fetchWeather(lat: number, lon: number): Promise<WeatherSnapshot> {
-  const cached = readCache(lat, lon);
-  if (cached) return cached;
+export async function fetchWeather(lat: number, lon: number, force = false): Promise<WeatherSnapshot> {
+  if (!force) {
+    const cached = readCache(lat, lon);
+    if (cached) return cached;
+  }
 
   const url = new URL('https://api.open-meteo.com/v1/forecast');
   url.searchParams.set('latitude', String(lat));
   url.searchParams.set('longitude', String(lon));
   url.searchParams.set('current', 'temperature_2m,weather_code');
-  url.searchParams.set('daily', 'precipitation_sum');
+  url.searchParams.set('daily', 'rain_sum,showers_sum');
   url.searchParams.set('timezone', 'auto');
   url.searchParams.set('forecast_days', '1');
 
@@ -53,11 +55,13 @@ export async function fetchWeather(lat: number, lon: number): Promise<WeatherSna
   const data = await res.json();
 
   const code = data.current?.weather_code ?? 1;
+  const rain = data.daily?.rain_sum?.[0] ?? 0;
+  const showers = data.daily?.showers_sum?.[0] ?? 0;
   const snap: WeatherSnapshot = {
     kind: wmoToKind(code),
     tempC: Math.round(data.current?.temperature_2m ?? 0),
     description: wmoToText(code),
-    rainTodayMm: data.daily?.precipitation_sum?.[0] ?? 0,
+    rainTodayMm: rain + showers,
     fetchedAt: Date.now(),
   };
   writeCache(lat, lon, snap);
