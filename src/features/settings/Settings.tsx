@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { clearEvents, saveSettings } from '../../store/db';
 import type { Settings } from '../../store/model';
 import { Clock, Floppy, PlantIndoor, PlantOutdoor, Refresh, WeatherRain } from '../../pixel/icons';
+import { APP_VERSION } from '../../version';
 
 interface Props {
   settings: Settings;
@@ -110,8 +111,11 @@ export default function SettingsScreen({ settings, refresh }: Props) {
 
       <div className="pix-frame">
         <div className="field">
-          <label className="setting-label">
-            <Refresh size={20} /> MISE A JOUR
+          <label className="setting-label" style={{ justifyContent: 'space-between' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+              <Refresh size={20} /> MISE A JOUR
+            </span>
+            <span style={{ fontSize: 8, color: 'var(--ink-soft)', letterSpacing: 1 }}>v.{APP_VERSION}</span>
           </label>
           <button className="pix-btn pix-btn--ghost" onClick={forceRefresh}>
             FORCER LE RAFRAICHISSEMENT
