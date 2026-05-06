@@ -127,25 +127,36 @@ export function WeatherStorm({ size = 40 }: IconProps) {
 }
 
 export function Clock({ size = 16 }: IconProps) {
+  // Alarm clock with two bells — terracotta accent, cream face
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" style={PIXEL}>
-      <rect x="5" y="2" width="6" height="1" fill="#2a2a2a" />
-      <rect x="3" y="3" width="2" height="1" fill="#2a2a2a" />
-      <rect x="11" y="3" width="2" height="1" fill="#2a2a2a" />
-      <rect x="2" y="4" width="1" height="2" fill="#2a2a2a" />
-      <rect x="13" y="4" width="1" height="2" fill="#2a2a2a" />
-      <rect x="2" y="10" width="1" height="2" fill="#2a2a2a" />
-      <rect x="13" y="10" width="1" height="2" fill="#2a2a2a" />
-      <rect x="3" y="12" width="2" height="1" fill="#2a2a2a" />
-      <rect x="11" y="12" width="2" height="1" fill="#2a2a2a" />
-      <rect x="5" y="13" width="6" height="1" fill="#2a2a2a" />
-      <rect x="3" y="4" width="10" height="8" fill="#fff8e8" />
-      <rect x="3" y="4" width="10" height="1" fill="#e8dcc0" />
-      {/* hands */}
-      <rect x="7" y="5" width="1" height="4" fill="#2a2a2a" />
-      <rect x="8" y="8" width="3" height="1" fill="#2a2a2a" />
-      {/* center pip */}
-      <rect x="7" y="8" width="1" height="1" fill="#c43d2a" />
+      {/* bells */}
+      <rect x="2" y="1" width="3" height="2" fill="#c46b4f" />
+      <rect x="11" y="1" width="3" height="2" fill="#c46b4f" />
+      <rect x="2" y="0" width="3" height="1" fill="#8a4a35" />
+      <rect x="11" y="0" width="3" height="1" fill="#8a4a35" />
+      {/* clock body outline */}
+      <rect x="3" y="4" width="10" height="1" fill="#2a2a2a" />
+      <rect x="2" y="5" width="1" height="7" fill="#2a2a2a" />
+      <rect x="13" y="5" width="1" height="7" fill="#2a2a2a" />
+      <rect x="3" y="12" width="10" height="1" fill="#2a2a2a" />
+      {/* face */}
+      <rect x="3" y="5" width="10" height="7" fill="#f5ecd9" />
+      {/* hour ticks */}
+      <rect x="7" y="5" width="2" height="1" fill="#2a2a2a" />
+      <rect x="7" y="11" width="2" height="1" fill="#2a2a2a" />
+      <rect x="3" y="8" width="1" height="1" fill="#2a2a2a" />
+      <rect x="12" y="8" width="1" height="1" fill="#2a2a2a" />
+      {/* hour hand (up-right) */}
+      <rect x="8" y="7" width="1" height="2" fill="#2a2a2a" />
+      <rect x="9" y="6" width="1" height="1" fill="#2a2a2a" />
+      {/* minute hand (right) */}
+      <rect x="9" y="8" width="2" height="1" fill="#c46b4f" />
+      {/* center pivot */}
+      <rect x="8" y="8" width="1" height="1" fill="#2a2a2a" />
+      {/* legs */}
+      <rect x="3" y="13" width="2" height="2" fill="#2a2a2a" />
+      <rect x="11" y="13" width="2" height="2" fill="#2a2a2a" />
     </svg>
   );
 }
