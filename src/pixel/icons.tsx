@@ -126,6 +126,24 @@ export function WeatherStorm({ size = 40 }: IconProps) {
   );
 }
 
+export function Trash({ size = 16 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" style={PIXEL}>
+      {/* lid */}
+      <rect x="3" y="3" width="10" height="1" fill="#2a2a2a" />
+      <rect x="6" y="2" width="4" height="1" fill="#2a2a2a" />
+      {/* body */}
+      <rect x="4" y="4" width="8" height="1" fill="#2a2a2a" />
+      <rect x="4" y="5" width="1" height="9" fill="#2a2a2a" />
+      <rect x="11" y="5" width="1" height="9" fill="#2a2a2a" />
+      <rect x="5" y="13" width="6" height="1" fill="#2a2a2a" />
+      {/* slats */}
+      <rect x="6" y="6" width="1" height="6" fill="#2a2a2a" />
+      <rect x="9" y="6" width="1" height="6" fill="#2a2a2a" />
+    </svg>
+  );
+}
+
 export type WeatherKind = 'sun' | 'cloud' | 'rain' | 'storm';
 
 export function WeatherIcon({ kind, size = 40 }: { kind: WeatherKind; size?: number }) {

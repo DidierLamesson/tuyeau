@@ -104,6 +104,18 @@ button {
 .pix-btn--terracotta { background: var(--terracotta); }
 .pix-btn--ghost { background: var(--cream-shade); color: var(--ink); }
 .pix-btn--danger { background: var(--danger); }
+.pix-btn--icon {
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 0 var(--ink);
+  border-width: 2px;
+}
+.pix-btn--icon:active { box-shadow: 0 0 0 var(--ink); }
+.pix-btn--indoor { background: var(--terracotta-soft); color: var(--ink); }
+.pix-btn--outdoor { background: var(--sage); color: var(--ink); }
+.pix-btn--rain { background: var(--water-soft); color: var(--ink); }
 
 /* Tabs */
 .tabbar {

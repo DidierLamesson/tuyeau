@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react';
 import { addEventOnDate, removeEvent } from '../../store/db';
 import { ymd, type EventGroup, type EventSource, type WateringEvent } from '../../store/model';
+import { PlantIndoor, PlantOutdoor, Trash, WeatherRain } from '../../pixel/icons';
 
 const MONTHS = ['JANV.', 'FEVR.', 'MARS', 'AVRIL', 'MAI', 'JUIN', 'JUIL.', 'AOUT', 'SEPT.', 'OCT.', 'NOV.', 'DEC.'];
 const DOW = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+const DOW_SHORT = ['Dim.', 'Lun.', 'Mar.', 'Mer.', 'Jeu.', 'Ven.', 'Sam.'];
+const MONTHS_SHORT = ['janv.', 'févr.', 'mars', 'avril', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
 
 interface DayInfo {
   indoor: boolean;
@@ -42,6 +45,16 @@ function eventLabel(e: WateringEvent): string {
   if (e.group === 'indoor') return 'Intérieur';
   if (e.group === 'outdoor') return 'Extérieur';
   return 'Tout';
+}
+
+function formatDayLabel(key: string): string {
+  const [y, m, d] = key.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  const dow = DOW_SHORT[date.getDay()];
+  const dd = String(d).padStart(2, '0');
+  const mn = MONTHS_SHORT[m - 1];
+  const yy = String(y).slice(-2);
+  return `${dow} ${dd} ${mn} ${yy}`;
 }
 
 interface Props {
@@ -83,7 +96,6 @@ export default function CalendarScreen({ events, refresh }: Props) {
 
   async function addOnOpenDay(group: EventGroup, source: EventSource) {
     if (!openDay) return;
-    // place the event at noon local time on the chosen day so it sorts cleanly
     const [y, m, d] = openDay.split('-').map(Number);
     const iso = new Date(y, m - 1, d, 12, 0, 0).toISOString();
     await addEventOnDate(group, source, iso);
@@ -130,9 +142,9 @@ export default function CalendarScreen({ events, refresh }: Props) {
 
       {openDay && (
         <div className="pix-frame">
-          <div className="h-stack">
+          <div className="h-stack" style={{ gap: 10 }}>
             <div className="h-row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
-              <div style={{ fontSize: 10 }}>{openDay}</div>
+              <div style={{ fontSize: 10 }}>{formatDayLabel(openDay)}</div>
               <button className="pix-btn pix-btn--ghost" onClick={() => setOpenDay(null)}>FERMER</button>
             </div>
 
@@ -141,7 +153,9 @@ export default function CalendarScreen({ events, refresh }: Props) {
                 {openEvents.map((e) => (
                   <div key={e.id} className="h-row" style={{ justifyContent: 'space-between', alignItems: 'center', gap: 8 }}>
                     <span className="meta" style={{ fontSize: 9 }}>· {eventLabel(e)}</span>
-                    <button className="pix-btn pix-btn--danger" onClick={() => deleteEvent(e.id)}>SUPPRIMER</button>
+                    <button className="pix-btn pix-btn--icon pix-btn--danger" onClick={() => deleteEvent(e.id)} aria-label="Supprimer">
+                      <Trash size={14} />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -150,13 +164,16 @@ export default function CalendarScreen({ events, refresh }: Props) {
             )}
 
             {!isFuture && (
-              <div className="h-stack" style={{ gap: 6, marginTop: 4 }}>
-                <div className="meta" style={{ fontSize: 8 }}>AJOUTER</div>
-                <div className="h-row" style={{ gap: 6, flexWrap: 'wrap' }}>
-                  <button className="pix-btn" onClick={() => addOnOpenDay('indoor', 'manual')}>INTERIEUR</button>
-                  <button className="pix-btn" onClick={() => addOnOpenDay('outdoor', 'manual')}>EXTERIEUR</button>
-                  <button className="pix-btn pix-btn--ghost" onClick={() => addOnOpenDay('outdoor', 'rain')}>PLUIE</button>
-                </div>
+              <div className="h-row" style={{ gap: 6 }}>
+                <button className="pix-btn pix-btn--icon pix-btn--indoor" onClick={() => addOnOpenDay('indoor', 'manual')} aria-label="Intérieur">
+                  <PlantIndoor size={20} />
+                </button>
+                <button className="pix-btn pix-btn--icon pix-btn--outdoor" onClick={() => addOnOpenDay('outdoor', 'manual')} aria-label="Extérieur">
+                  <PlantOutdoor size={20} />
+                </button>
+                <button className="pix-btn pix-btn--icon pix-btn--rain" onClick={() => addOnOpenDay('outdoor', 'rain')} aria-label="Pluie">
+                  <WeatherRain size={20} />
+                </button>
               </div>
             )}
           </div>
@@ -168,20 +185,20 @@ export default function CalendarScreen({ events, refresh }: Props) {
 
 function Legend() {
   const sw = (bg: string) => ({
-    width: 12,
-    height: 12,
+    width: 10,
+    height: 10,
     background: bg,
     border: '2px solid var(--ink)',
     flexShrink: 0,
   });
-  const row = { fontSize: 9, display: 'flex', alignItems: 'center', gap: 8 } as const;
+  const item = { fontSize: 9, display: 'flex', alignItems: 'center', gap: 6 } as const;
   return (
     <div className="pix-frame">
-      <div className="h-stack" style={{ gap: 6 }}>
-        <div className="meta" style={row}><span style={sw('var(--terracotta-soft)')} /> Intérieur</div>
-        <div className="meta" style={row}><span style={sw('var(--sage)')} /> Extérieur</div>
-        <div className="meta" style={row}><span style={sw('var(--water-soft)')} /> Pluie</div>
-        <div className="meta" style={row}><span style={sw('linear-gradient(135deg, var(--terracotta-soft) 50%, var(--sage) 50%)')} /> Intérieur + extérieur</div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 6 }}>
+        <div className="meta" style={item}><span style={sw('var(--terracotta-soft)')} /> Intérieur</div>
+        <div className="meta" style={item}><span style={sw('var(--sage)')} /> Extérieur</div>
+        <div className="meta" style={item}><span style={sw('linear-gradient(135deg, var(--terracotta-soft) 50%, var(--sage) 50%)')} /> Int. + ext.</div>
+        <div className="meta" style={item}><span style={sw('var(--water-soft)')} /> Pluie</div>
       </div>
     </div>
   );
