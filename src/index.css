@@ -117,6 +117,14 @@ button {
 .pix-btn--outdoor { background: var(--sage); color: var(--ink); }
 .pix-btn--rain { background: var(--water-soft); color: var(--ink); }
 
+.cal-add-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 6px;
+}
+
 /* Tabs */
 .tabbar {
   position: sticky;

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { addEventOnDate, removeEvent } from '../../store/db';
 import { ymd, type EventGroup, type EventSource, type WateringEvent } from '../../store/model';
-import { Trash } from '../../pixel/icons';
+import { PlantIndoor, PlantOutdoor, Trash, WeatherRain } from '../../pixel/icons';
 
 const MONTHS = ['JANV.', 'FEVR.', 'MARS', 'AVRIL', 'MAI', 'JUIN', 'JUIL.', 'AOUT', 'SEPT.', 'OCT.', 'NOV.', 'DEC.'];
 const DOW = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
@@ -166,9 +166,15 @@ export default function CalendarScreen({ events, refresh }: Props) {
 
             {!isFuture && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
-                <button className="pix-btn pix-btn--indoor" onClick={() => addOnOpenDay('indoor', 'manual')}>Int.</button>
-                <button className="pix-btn pix-btn--outdoor" onClick={() => addOnOpenDay('outdoor', 'manual')}>Ext.</button>
-                <button className="pix-btn pix-btn--rain" onClick={() => addOnOpenDay('outdoor', 'rain')}>Pluie</button>
+                <button className="pix-btn pix-btn--indoor cal-add-btn" onClick={() => addOnOpenDay('indoor', 'manual')}>
+                  <PlantIndoor size={16} /> Int.
+                </button>
+                <button className="pix-btn pix-btn--outdoor cal-add-btn" onClick={() => addOnOpenDay('outdoor', 'manual')}>
+                  <PlantOutdoor size={16} /> Ext.
+                </button>
+                <button className="pix-btn pix-btn--rain cal-add-btn" onClick={() => addOnOpenDay('outdoor', 'rain')}>
+                  <WeatherRain size={16} /> Pluie
+                </button>
               </div>
             )}
           </div>
