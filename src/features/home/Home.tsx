@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { addEvent, getGroupState, getStreak, lastEventForGroup, removeEvent } from '../../store/db';
-import type { Group, Settings, WateringEvent } from '../../store/model';
+import { addEvent, getGroupState, getStreak, hasEventOfType, removeEvent } from '../../store/db';
+import { ymd, type Group, type Settings, type WateringEvent } from '../../store/model';
 import { PlantIndoor, PlantOutdoor, WateringCan, WeatherIcon } from '../../pixel/icons';
 import { fetchWeather, type WeatherSnapshot } from '../../weather/openMeteo';
 
@@ -58,14 +58,17 @@ export default function Home({ events, settings, refresh }: HomeProps) {
 
   useEffect(() => { loadWeather(); }, []);
 
+  const todayKey = ymd(new Date());
+  const indoorDoneToday = hasEventOfType(events, todayKey, 'indoor');
+  const outdoorDoneToday = hasEventOfType(events, todayKey, 'outdoor');
+  const rainDoneToday = hasEventOfType(events, todayKey, 'rain');
   const showRainCard = !!weather && weather.rainTodayMm >= settings.rainThresholdMm;
-  const outdoorAlreadyToday = (() => {
-    const last = lastEventForGroup(events, 'outdoor');
-    if (!last) return false;
-    return new Date(last.date).toDateString() === new Date().toDateString();
-  })();
+  const outdoorAlreadyToday = outdoorDoneToday || rainDoneToday;
 
   async function water(g: Group | 'both', source: 'manual' | 'rain' = 'manual') {
+    const today = ymd(new Date());
+    const type = source === 'rain' ? 'rain' : g === 'indoor' ? 'indoor' : 'outdoor';
+    if (g !== 'both' && hasEventOfType(events, today, type)) return;
     const e = await addEvent(g, source);
     setSnack({
       msg: g === 'both' ? 'Tout arrosé' : g === 'indoor' ? 'Intérieur arrosé' : 'Extérieur arrosé',
@@ -103,6 +106,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
         days={indoor.daysSince}
         max={settings.indoorMaxDays}
         status={indoor.status}
+        doneToday={indoorDoneToday}
         onWater={() => water('indoor')}
       />
 
@@ -114,6 +118,7 @@ export default function Home({ events, settings, refresh }: HomeProps) {
         days={outdoor.daysSince}
         max={settings.outdoorMaxDays}
         status={outdoor.status}
+        doneToday={outdoorDoneToday}
         onWater={() => water('outdoor')}
       />
 
@@ -196,10 +201,11 @@ interface GroupCardProps {
   days: number | null;
   max: number;
   status: 'ok' | 'due' | 'late';
+  doneToday: boolean;
   onWater: () => void;
 }
 
-function GroupCard({ title, icon, variant, last, days, max, status, onWater }: GroupCardProps) {
+function GroupCard({ title, icon, variant, last, days, max, status, doneToday, onWater }: GroupCardProps) {
   const statusLabel = status === 'late' ? `RETARD ${days != null ? `· ${days - max + 1} J` : ''}` : status === 'due' ? 'A ARROSER' : 'OK';
   const cls = status === 'late' ? 'status--late' : status === 'due' ? 'status--due' : '';
   const frameVariant = status === 'late' ? 'pix-frame--danger' : `pix-frame--${variant}`;
@@ -215,9 +221,9 @@ function GroupCard({ title, icon, variant, last, days, max, status, onWater }: G
           </div>
           <span className={`status ${cls}`}>{statusLabel}</span>
         </div>
-        <button className="pix-btn" onClick={onWater}>
+        <button className="pix-btn" onClick={onWater} disabled={doneToday}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
-            <WateringCan size={16} /> ARROSER
+            <WateringCan size={16} /> {doneToday ? 'DEJA FAIT' : 'ARROSER'}
           </span>
         </button>
       </div>

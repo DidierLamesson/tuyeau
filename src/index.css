@@ -100,9 +100,15 @@ button {
   transition: transform 0.05s, box-shadow 0.05s;
 }
 
-.pix-btn:active {
+.pix-btn:active:not(:disabled) {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0 var(--ink);
+}
+
+.pix-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: 2px 2px 0 var(--ink);
 }
 
 .pix-btn--terracotta { background: var(--terracotta); }

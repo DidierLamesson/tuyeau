@@ -97,3 +97,14 @@ export function eventsByDay(events: WateringEvent[]): Map<string, { indoor: bool
   }
   return map;
 }
+
+export type DayType = 'indoor' | 'outdoor' | 'rain';
+
+export function hasEventOfType(events: WateringEvent[], dayKey: string, type: DayType): boolean {
+  return events.some((e) => {
+    if (ymd(new Date(e.date)) !== dayKey) return false;
+    if (type === 'indoor') return (e.group === 'indoor' || e.group === 'both') && e.source !== 'rain';
+    if (type === 'outdoor') return (e.group === 'outdoor' || e.group === 'both') && e.source === 'manual';
+    return (e.group === 'outdoor' || e.group === 'both') && e.source === 'rain';
+  });
+}

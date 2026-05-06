@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { addEventOnDate, removeEvent } from '../../store/db';
+import { addEventOnDate, hasEventOfType, removeEvent } from '../../store/db';
 import { ymd, type EventGroup, type EventSource, type WateringEvent } from '../../store/model';
 import { PlantIndoor, PlantOutdoor, Trash, WeatherRain } from '../../pixel/icons';
 
@@ -96,11 +96,21 @@ export default function CalendarScreen({ events, refresh }: Props) {
 
   async function addOnOpenDay(group: EventGroup, source: EventSource) {
     if (!openDay) return;
+    const type = source === 'rain' ? 'rain' : group === 'indoor' ? 'indoor' : 'outdoor';
+    if (hasEventOfType(events, openDay, type)) return;
     const [y, m, d] = openDay.split('-').map(Number);
     const iso = new Date(y, m - 1, d, 12, 0, 0).toISOString();
     await addEventOnDate(group, source, iso);
     refresh();
   }
+
+  const dayHas = openDay
+    ? {
+        indoor: hasEventOfType(events, openDay, 'indoor'),
+        outdoor: hasEventOfType(events, openDay, 'outdoor'),
+        rain: hasEventOfType(events, openDay, 'rain'),
+      }
+    : { indoor: false, outdoor: false, rain: false };
 
   async function deleteEvent(id: string) {
     await removeEvent(id);
@@ -166,13 +176,25 @@ export default function CalendarScreen({ events, refresh }: Props) {
 
             {!isFuture && (
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 6 }}>
-                <button className="pix-btn pix-btn--indoor cal-add-btn" onClick={() => addOnOpenDay('indoor', 'manual')}>
+                <button
+                  className="pix-btn pix-btn--indoor cal-add-btn"
+                  onClick={() => addOnOpenDay('indoor', 'manual')}
+                  disabled={dayHas.indoor}
+                >
                   <PlantIndoor size={16} /> Int.
                 </button>
-                <button className="pix-btn pix-btn--outdoor cal-add-btn" onClick={() => addOnOpenDay('outdoor', 'manual')}>
+                <button
+                  className="pix-btn pix-btn--outdoor cal-add-btn"
+                  onClick={() => addOnOpenDay('outdoor', 'manual')}
+                  disabled={dayHas.outdoor}
+                >
                   <PlantOutdoor size={16} /> Ext.
                 </button>
-                <button className="pix-btn pix-btn--rain cal-add-btn" onClick={() => addOnOpenDay('outdoor', 'rain')}>
+                <button
+                  className="pix-btn pix-btn--rain cal-add-btn"
+                  onClick={() => addOnOpenDay('outdoor', 'rain')}
+                  disabled={dayHas.rain}
+                >
                   <WeatherRain size={16} /> Pluie
                 </button>
               </div>
