@@ -126,6 +126,47 @@ export function WeatherStorm({ size = 40 }: IconProps) {
   );
 }
 
+export function Clock({ size = 16 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" style={PIXEL}>
+      <rect x="5" y="2" width="6" height="1" fill="#2a2a2a" />
+      <rect x="3" y="3" width="2" height="1" fill="#2a2a2a" />
+      <rect x="11" y="3" width="2" height="1" fill="#2a2a2a" />
+      <rect x="2" y="4" width="1" height="2" fill="#2a2a2a" />
+      <rect x="13" y="4" width="1" height="2" fill="#2a2a2a" />
+      <rect x="2" y="10" width="1" height="2" fill="#2a2a2a" />
+      <rect x="13" y="10" width="1" height="2" fill="#2a2a2a" />
+      <rect x="3" y="12" width="2" height="1" fill="#2a2a2a" />
+      <rect x="11" y="12" width="2" height="1" fill="#2a2a2a" />
+      <rect x="5" y="13" width="6" height="1" fill="#2a2a2a" />
+      <rect x="3" y="4" width="10" height="8" fill="#fff8e8" />
+      <rect x="3" y="4" width="10" height="1" fill="#e8dcc0" />
+      {/* hands */}
+      <rect x="7" y="5" width="1" height="4" fill="#2a2a2a" />
+      <rect x="8" y="8" width="3" height="1" fill="#2a2a2a" />
+      {/* center pip */}
+      <rect x="7" y="8" width="1" height="1" fill="#c43d2a" />
+    </svg>
+  );
+}
+
+export function Floppy({ size = 16 }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" style={PIXEL}>
+      <rect x="2" y="2" width="12" height="12" fill="#3a6f9c" />
+      <rect x="2" y="2" width="12" height="1" fill="#6fa8d6" />
+      <rect x="2" y="13" width="12" height="1" fill="#1a3f5c" />
+      {/* shutter */}
+      <rect x="4" y="3" width="8" height="4" fill="#2a2a2a" />
+      <rect x="9" y="4" width="2" height="2" fill="#c0c0c0" />
+      {/* label */}
+      <rect x="4" y="9" width="8" height="4" fill="#fff8e8" />
+      <rect x="5" y="10" width="6" height="1" fill="#a0a0a0" />
+      <rect x="5" y="11" width="6" height="1" fill="#a0a0a0" />
+    </svg>
+  );
+}
+
 export function Trash({ size = 16 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" style={PIXEL}>
