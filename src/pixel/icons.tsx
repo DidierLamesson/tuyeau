@@ -182,6 +182,37 @@ export function Floppy({ size = 16 }: IconProps) {
   );
 }
 
+export function Refresh({ size = 16 }: IconProps) {
+  // Circular arrow — represents reloading / fetching the latest version
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" style={PIXEL}>
+      {/* top arc */}
+      <rect x="5" y="2" width="6" height="1" fill="#2a2a2a" />
+      <rect x="3" y="3" width="2" height="1" fill="#2a2a2a" />
+      <rect x="11" y="3" width="2" height="1" fill="#2a2a2a" />
+      <rect x="2" y="4" width="1" height="2" fill="#2a2a2a" />
+      <rect x="13" y="4" width="1" height="2" fill="#2a2a2a" />
+      {/* sides */}
+      <rect x="2" y="6" width="1" height="4" fill="#2a2a2a" />
+      <rect x="13" y="6" width="1" height="4" fill="#2a2a2a" />
+      {/* bottom arc */}
+      <rect x="2" y="10" width="1" height="2" fill="#2a2a2a" />
+      <rect x="13" y="10" width="1" height="2" fill="#2a2a2a" />
+      <rect x="3" y="12" width="2" height="1" fill="#2a2a2a" />
+      <rect x="11" y="12" width="2" height="1" fill="#2a2a2a" />
+      <rect x="5" y="13" width="6" height="1" fill="#2a2a2a" />
+      {/* gap on top-right (open the loop) */}
+      <rect x="10" y="2" width="3" height="2" fill="#f5ecd9" />
+      <rect x="11" y="3" width="2" height="1" fill="#f5ecd9" />
+      {/* arrow head pointing down-right at the gap */}
+      <rect x="11" y="1" width="1" height="2" fill="#5a8a3a" />
+      <rect x="12" y="2" width="1" height="2" fill="#5a8a3a" />
+      <rect x="13" y="3" width="1" height="2" fill="#5a8a3a" />
+      <rect x="14" y="3" width="1" height="2" fill="#5a8a3a" />
+    </svg>
+  );
+}
+
 export function Trash({ size = 16 }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 16 16" style={PIXEL}>

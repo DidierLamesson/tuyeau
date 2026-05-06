@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { clearEvents, saveSettings } from '../../store/db';
 import type { Settings } from '../../store/model';
-import { Clock, Floppy, PlantIndoor, PlantOutdoor, WeatherRain } from '../../pixel/icons';
+import { Clock, Floppy, PlantIndoor, PlantOutdoor, Refresh, WeatherRain } from '../../pixel/icons';
 
 interface Props {
   settings: Settings;
@@ -18,6 +18,22 @@ export default function SettingsScreen({ settings, refresh }: Props) {
     if (!confirm("Effacer tout l'historique ? Action irréversible.")) return;
     await clearEvents();
     refresh();
+  }
+
+  async function forceRefresh() {
+    try {
+      const cacheKeys = await caches.keys();
+      await Promise.all(cacheKeys.map((k) => caches.delete(k)));
+    } catch {
+      /* caches API unavailable */
+    }
+    try {
+      const reg = await navigator.serviceWorker?.getRegistration();
+      if (reg) await reg.unregister();
+    } catch {
+      /* sw unavailable */
+    }
+    window.location.reload();
   }
 
   return (
@@ -88,6 +104,17 @@ export default function SettingsScreen({ settings, refresh }: Props) {
           </label>
           <button className="pix-btn pix-btn--danger" onClick={reset}>
             TOUT EFFACER
+          </button>
+        </div>
+      </div>
+
+      <div className="pix-frame">
+        <div className="field">
+          <label className="setting-label">
+            <Refresh size={20} /> MISE A JOUR
+          </label>
+          <button className="pix-btn pix-btn--ghost" onClick={forceRefresh}>
+            FORCER LE RAFRAICHISSEMENT
           </button>
         </div>
       </div>
