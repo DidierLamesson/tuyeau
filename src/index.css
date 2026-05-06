@@ -318,7 +318,44 @@ button {
 }
 .field input[type="range"] {
   width: 100%;
-  accent-color: var(--moss);
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  height: 22px;
+  padding: 0;
+  cursor: pointer;
+}
+.field input[type="range"]::-webkit-slider-runnable-track {
+  height: 10px;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.field input[type="range"]::-moz-range-track {
+  height: 10px;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+.field input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -6px;
+  background: var(--moss);
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  cursor: pointer;
+}
+.field input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  background: var(--moss);
+  border: 2px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 2px 2px 0 var(--ink);
+  cursor: pointer;
 }
 .field input[type="time"], .field input[type="number"] {
   font-family: var(--pixel);
@@ -334,10 +371,21 @@ button {
   gap: 8px;
 }
 
-/* Slider colour variants */
-.slider--indoor { accent-color: var(--terracotta-dark); }
-.slider--outdoor { accent-color: var(--moss); }
-.slider--rain { accent-color: var(--water-dark); }
+/* Slider colour variants — track tinted with the soft tone, thumb with the dark tone */
+.slider--indoor::-webkit-slider-runnable-track { background: var(--terracotta-soft); }
+.slider--indoor::-moz-range-track { background: var(--terracotta-soft); }
+.slider--indoor::-webkit-slider-thumb { background: var(--terracotta-dark); }
+.slider--indoor::-moz-range-thumb { background: var(--terracotta-dark); }
+
+.slider--outdoor::-webkit-slider-runnable-track { background: var(--mint); }
+.slider--outdoor::-moz-range-track { background: var(--mint); }
+.slider--outdoor::-webkit-slider-thumb { background: var(--moss); }
+.slider--outdoor::-moz-range-thumb { background: var(--moss); }
+
+.slider--rain::-webkit-slider-runnable-track { background: var(--water-soft); }
+.slider--rain::-moz-range-track { background: var(--water-soft); }
+.slider--rain::-webkit-slider-thumb { background: var(--water-dark); }
+.slider--rain::-moz-range-thumb { background: var(--water-dark); }
 
 /* Time picker (custom — keeps DA, no native dropdown) */
 .time-display {
