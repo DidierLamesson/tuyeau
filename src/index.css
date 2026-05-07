@@ -39,27 +39,23 @@
   box-sizing: border-box;
 }
 
+html {
+  /* iOS standalone draws the safe-area zones from the html element, so
+     painting it cream-shade makes the home-indicator strip blend with
+     the tabbar instead of showing the body's cream. */
+  background: var(--cream-shade);
+}
+
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  background: var(--cream);
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-/* iOS standalone safe-area filler — paints the home-indicator zone in
-   the same colour as the tabbar so they read as one continuous block */
-body::after {
-  content: '';
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: env(safe-area-inset-bottom);
-  background: var(--cream-shade);
-  z-index: 99;
-  pointer-events: none;
+body {
+  background: var(--cream);
 }
 
 #root {
