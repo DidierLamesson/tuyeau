@@ -39,22 +39,19 @@
   box-sizing: border-box;
 }
 
-html {
-  /* iOS standalone draws the safe-area zones from the html element, so
-     painting it cream-shade makes the home-indicator strip blend with
-     the tabbar instead of showing the body's cream. */
-  background: var(--cream-shade);
-}
-
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  /* both html and body painted cream-shade so any safe-area zone iOS
+     reveals (notch, home indicator) blends with the tabbar's cream-shade.
+     The visible page content is restored to cream by .screen below. */
+  background: var(--cream-shade);
   overscroll-behavior: none;
   -webkit-tap-highlight-color: transparent;
 }
 
-body {
+#root {
   background: var(--cream);
 }
 
